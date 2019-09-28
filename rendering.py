@@ -7,6 +7,8 @@ import sdl2.ext
 WHITE = sdl2.ext.Color(255, 255, 255)
 BLACK = sdl2.ext.Color(0, 0, 0)
 
+window, render_context = None, None
+
 
 class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
     def __init__(self, window):
@@ -43,7 +45,9 @@ class Renderable(sdl2.ext.Entity):
         self.sprite.position = self.sprite.position[0] + x, self.sprite.position[1] + y
 
 
-def run():
+def init_rendering():
+
+    global window, render_context
 
     # initialize window
     sdl2.ext.init()
@@ -52,23 +56,11 @@ def run():
 
     render_context = RenderContext(window)
 
-    # create sprites
-    square = render_context.CreateSquare()
-    square2 = render_context.CreateSquare(position=(200, 200), size=(60, 60))
 
-    running = True
-    while running:
-        events = sdl2.ext.get_events()
+def handle_events():
+    events = sdl2.ext.get_events()
 
-        square.Move(1, 1)
-
-        for event in events:
-            if event.type == sdl2.SDL_QUIT:
-                running = False
-                break
-        render_context.world.process()
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(run())
+    for event in events:
+        if event.type == sdl2.SDL_QUIT:
+            running = False
+            break
