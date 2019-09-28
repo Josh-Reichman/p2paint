@@ -4,6 +4,7 @@ import sdl2.ext
 
 WHITE = sdl2.ext.Color(255, 255, 255)
 
+
 class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
     def __init__(self, window):
         super(SoftwareRenderer, self).__init__(window)
@@ -11,6 +12,23 @@ class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
     def render(self, components):
         sdl2.ext.fill(self.surface, sdl2.ext.Color(0, 0, 0))
         super(SoftwareRenderer, self).render(components)
+
+
+class RenderContext:
+
+    def __init__(self, window):
+        self.window = window
+        self.world = sdl2.ext.World()
+
+        # initialize renderer and sprite factory
+        self.sprite_renderer = SoftwareRenderer(self.window)
+        self.world.add_system(self.sprite_renderer)
+        self.sprite_factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
+
+    def CreateSquare(self, position=(0, 0), size=(20, 20), color=WHITE):
+        square_sprite = self.sprite_factory.from_color(color, size=size)
+        square = Renderable(self.world, square_sprite, position[0], position[1])
+        return square
 
 
 class Renderable(sdl2.ext.Entity):
@@ -23,19 +41,13 @@ def run():
 
     # initialize window
     sdl2.ext.init()
-    window = sdl2.ext.Window("Peer to Paint", size=(800, 800))
+    window = sdl2.ext.Window("Peer 2 Paint", size=(800, 800))
     window.show()
-    world = sdl2.ext.World()
 
-    # initialize renderer and sprite factory
-    sprite_renderer = SoftwareRenderer(window)
-    world.add_system(sprite_renderer)
-    sprite_factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
+    renderContext = RenderContext(window)
 
     # create sprites
-    square = sprite_factory.from_color(WHITE, size=(40, 40))
-
-    player1 = Renderable(world, square, 0, 250)
+    square = renderContext.CreateSquare()
 
     running = True
     while running:
@@ -44,7 +56,7 @@ def run():
             if event.type == sdl2.SDL_QUIT:
                 running = False
                 break
-        world.process()
+        renderContext.world.process()
     return 0
 
 
