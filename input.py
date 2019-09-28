@@ -6,6 +6,8 @@ debug = True
 is_mouse_down = False
 x = 0
 y = 0
+x_hold = 0
+y_hold = 0
 
 
 def handle_events():
@@ -25,6 +27,8 @@ def handle_events():
 def handle_mouse():
     global x
     global y
+    global x_hold
+    global y_hold
     x, y = sdl2.c_int(), sdl2.c_int()
     sdl2.SDL_GetMouseState(x, y)
     if debug:
@@ -41,3 +45,7 @@ def get_x():
 
 def get_y():
     return y
+
+def store_position():
+    x_hold = x
+    y_hold = y
