@@ -3,7 +3,7 @@ import json
 import http
 import sys
 
-peer_list = ['bruh moments']
+peer_list = []
 
 def send_peer_list(req_ip):
     """Send a json of the peer list to the requestor."""
@@ -45,6 +45,18 @@ def decode_action(request):
 
     return json.loads(request)['request']
 
+def get_ip():
+    s = socket(AF_INET, SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
 
 def main():
     """Main function of the tracker server."""
@@ -56,9 +68,11 @@ def main():
 
     server_socket = socket(AF_INET,SOCK_STREAM)
     server_socket.bind(('',server_port))
+
+    print(get_ip())
+
     server_socket.listen(1)
 
-    print('server running babyyyyyyy')
 
     while True:
 
