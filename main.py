@@ -10,8 +10,9 @@ def run():
 
     # TODO: create objects that exist at start here
     object_list = [
+        objects.Object(rendering.render_context.CreateSquare(position=(100, 100), size=(60, 60))),
         objects.Object(rendering.render_context.CreateSquare(position=(200, 200), size=(60, 60))),
-        objects.Object(rendering.render_context.CreateSquare(position=(200, 200), size=(60, 60)))
+        objects.Object(rendering.render_context.CreateSquare(position=(300, 300), size=(60, 60)))
     ]
     global running
     running = True
@@ -21,7 +22,6 @@ def run():
             running = False
         rendering.clear()
         [o.graphic.render(rendering.render_context) for o in object_list]
-        #rendering.render_context.sdl_renderer.render([o.graphic.sprite for o in object_list])
         rendering.swap()
         object_list[0].moveAdditive(1, 1)
         if input.is_mouse_down:

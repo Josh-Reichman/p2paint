@@ -19,14 +19,16 @@ class RenderContext:
         self.sdl_renderer = sdl2.SDL_CreateRenderer(window, -1, sdl2.SDL_RENDERER_ACCELERATED)
 
     def CreateSquare(self, position=(0, 0), size=(20, 20), color=WHITE):
-        square = Renderable(self.world, position[0], position[1])
+        square = Renderable(self.world, position[0], position[1], size[0], size[1])
         return square
 
 
 class Renderable:
-    def __init__(self, world, posx=0, posy=0):
+    def __init__(self, world, posx=0, posy=0, sizex=100, sizey=100):
         self.x = posx
         self.y = posy
+        self.sx = sizex
+        self.sy = sizey
 
     def Move(self, x, y):
         self.x = x
@@ -37,7 +39,7 @@ class Renderable:
         self.y += y
 
     def render(self, render_context):
-        sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(0, 0, 100, 100))
+        sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(self.x, self.y, self.sx, self.sy))
 
 
 def init_rendering():
