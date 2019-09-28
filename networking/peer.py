@@ -28,12 +28,17 @@ def main():
         while True:
             send_peers_request()
 
-            for direc in peers_map:
-                peers_map[direc] = create_socket_pair(peers[0])
+            try:
+                for direc in peers_map:
+                    peers_map[direc] = create_socket_pair(peers[0])
+            except IndexError:
+                # No peers connected, can't reference the peers[0]
+                time.sleep(0.5)
+                continue
 
             for direc in peers_map:
                 read_from_socket(direc[0])
-                write_to_socket(direc[1])
+                write_to_socket(direc[1], 'bruh momento'.encode())
             
             time.sleep(0.5)
 
@@ -42,8 +47,6 @@ def main():
         for direc in peers_map:
             direc[0][0].close()
             direc[1].close()
-
-    print('finished')
 
 
 
@@ -74,8 +77,9 @@ def read_from_socket(socket):
 
             # data here will be a JSON changed to rendering instructions on this peer
 
-def write_to_socket(socket):
-    socket.send('bruh momento')
+def write_to_socket(socket, str_data):
+    if str_data is not None:
+        socket.send(str_data)
         
 
 #
@@ -133,4 +137,5 @@ def send_remove_request():
 
 
 if __name__ == '__main__':
+    print('Debug run')
     main()
