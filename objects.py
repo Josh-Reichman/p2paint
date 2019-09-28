@@ -1,6 +1,7 @@
 import uuid
 import json
-import rendering
+import rendering, input
+
 
 
 class Object:
@@ -23,12 +24,12 @@ class Object:
         # TODO take data and decode value
         json.load(input_data)
 
-    def move(self, velocity_x, velocity_y):
+    def move(self, x, y):
         # TODO Change position based on velocity of drag
-        rendering.Renderable.Move(self.graphic, velocity_x, velocity_y)
+        rendering.Renderable.Move(self.graphic, x, y)
 
-    def moveAdditive(self, velocity_x, velocity_y):
-        rendering.Renderable.MoveAdditive(self.graphic, velocity_x, velocity_y)
+    def moveAdditive(self, x, y,x_init=0, y_init=0):
+        rendering.Renderable.MoveAdditive(self.graphic, (x_init - x) // 10, (y_init - y)//10)
 
     def transfer_to_peer(self, peer):
         # TODO Transfer object to peer
