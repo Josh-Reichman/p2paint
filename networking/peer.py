@@ -28,13 +28,20 @@ def main():
         while True:
             send_peers_request()
 
+            base_port = 12012
+            peer_count = 0
             try:
                 for direc in peers_map:
-                    peers_map[direc] = create_socket_pair(peers[0])
+                    peers_map[direc] = create_socket_triple(peers[peer_count], base_port + peer_count)
+                    peer_count = peer_count + 1
+
             except IndexError:
                 # No peers connected, can't reference the peers[0]
                 time.sleep(0.5)
                 continue
+
+            for direc in peers_map:
+                peers_map[direc] = connect_socket(peers_map[direc][0], peers_map[direc][1], peers_map[direc][2], base_port)
 
             for direc in peers_map:
                 read_from_socket(direc[0])
@@ -44,10 +51,14 @@ def main():
 
     except KeyboardInterrupt:
         send_remove_request()
-        for direc in peers_map:
+        for direc in peers_map.items():
             direc[0][0].close()
             direc[1].close()
 
+
+
+# info needed:
+# listen_socket, ip, port
 
 
 
@@ -55,16 +66,20 @@ def main():
 # Functions for interacting with other peers
 #
 
-def create_socket_pair(peer_ip):
-    port = 12012
+def create_socket_triple(ip, port_num):
+    port = port_num
 
     listen_socket = socket(AF_INET,SOCK_STREAM)
     listen_socket.bind(('',port))
 
     peer_socket = socket(AF_INET, SOCK_STREAM)
-    peer_socket.connect((peer_ip, port))
 
-    return ([listen_socket], peer_socket)
+
+    return ([listen_socket], peer_socket, ip)
+
+def connect_socket(listen_socket, client_socket, peer_ip, port_num):
+    client_socket.connect((peer_ip, port_num))
+    return (listen_socket, client_socket)
 
 
 def read_from_socket(socket):
