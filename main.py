@@ -34,12 +34,12 @@ def run():
             clicked = True
         else:
             if clicked:
-                object_list[0].moveAdditive(input.x.value, input.y.value, x_init, y_init)
+                object_list[0].move_additive(input.x.value, input.y.value, x_init, y_init)
                 clicked = False
                 x_post = input.x.value
                 y_post = input.y.value
             else:
-                object_list[0].moveAdditive(x_init-x_post, y_init-y_post)
+                object_list[0].move_additive(x_init-x_post, y_init-y_post)
     return 0
 
 
