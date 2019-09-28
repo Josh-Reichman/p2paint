@@ -28,7 +28,6 @@ def run():
         rendering.clear()
         [o.graphic.render(rendering.render_context) for o in object_list]
         rendering.swap()
-        object_list[0].move_additive(1, 1)
         if input.is_mouse_down:
             if not clicked:
                 x_init = input.x.value
