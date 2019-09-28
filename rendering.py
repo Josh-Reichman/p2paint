@@ -1,32 +1,52 @@
 import sys
-import ctypes
-from sdl2 import *
+import sdl2
+import sdl2.ext
 
-def main():
-    SDL_Init(SDL_INIT_VIDEO)
-    window = SDL_CreateWindow(b"Hello World",
-                              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                              592, 460, SDL_WINDOW_SHOWN)
-    windowsurface = SDL_GetWindowSurface(window)
+WHITE = sdl2.ext.Color(255, 255, 255)
 
-    image = SDL_LoadBMP(b"/home/iamroot/Pictures/hazard_symbol.png")
-    SDL_BlitSurface(image, None, windowsurface, None)
+class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
+    def __init__(self, window):
+        super(SoftwareRenderer, self).__init__(window)
 
-    SDL_UpdateWindowSurface(window)
-    SDL_FreeSurface(image)
+    def render(self, components):
+        sdl2.ext.fill(self.surface, sdl2.ext.Color(0, 0, 0))
+        super(SoftwareRenderer, self).render(components)
+
+
+class Renderable(sdl2.ext.Entity):
+    def __init__(self, world, sprite, posx=0, posy=0):
+        self.sprite = sprite
+        self.sprite.position = posx, posy
+
+
+def run():
+
+    # initialize window
+    sdl2.ext.init()
+    window = sdl2.ext.Window("Peer to Paint", size=(800, 800))
+    window.show()
+    world = sdl2.ext.World()
+
+    # initialize renderer and sprite factory
+    sprite_renderer = SoftwareRenderer(window)
+    world.add_system(sprite_renderer)
+    sprite_factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
+
+    # create sprites
+    square = sprite_factory.from_color(WHITE, size=(40, 40))
+
+    player1 = Renderable(world, square, 0, 250)
 
     running = True
-    event = SDL_Event()
     while running:
-        while SDL_PollEvent(ctypes.byref(event)) != 0:
-            if event.type == SDL_QUIT:
+        events = sdl2.ext.get_events()
+        for event in events:
+            if event.type == sdl2.SDL_QUIT:
                 running = False
                 break
-
-    SDL_DestroyWindow(window)
-    SDL_Quit()
+        world.process()
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(run())
