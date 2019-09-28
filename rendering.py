@@ -1,8 +1,12 @@
 import sys
+import os
 import sdl2
 import sdl2.ext
+import sdl2.sdlttf as ttf
+
 
 WHITE = sdl2.ext.Color(255, 255, 255)
+BLACK = sdl2.ext.Color(0, 0, 0)
 
 
 class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
@@ -10,7 +14,7 @@ class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
         super(SoftwareRenderer, self).__init__(window)
 
     def render(self, components):
-        sdl2.ext.fill(self.surface, sdl2.ext.Color(0, 0, 0))
+        sdl2.ext.fill(self.surface, BLACK)
         super(SoftwareRenderer, self).render(components)
 
 
@@ -36,6 +40,9 @@ class Renderable(sdl2.ext.Entity):
         self.sprite = sprite
         self.sprite.position = posx, posy
 
+    def Move(self, x, y):
+        self.sprite.position = self.sprite.position[0] + x, self.sprite.position[1] + y
+
 
 def run():
 
@@ -44,19 +51,23 @@ def run():
     window = sdl2.ext.Window("Peer 2 Paint", size=(800, 800))
     window.show()
 
-    renderContext = RenderContext(window)
+    render_context = RenderContext(window)
 
     # create sprites
-    square = renderContext.CreateSquare()
+    square = render_context.CreateSquare()
+    square2 = render_context.CreateSquare(position=(200, 200), size=(60, 60))
 
     running = True
     while running:
         events = sdl2.ext.get_events()
+
+        square.Move(1, 1)
+
         for event in events:
             if event.type == sdl2.SDL_QUIT:
                 running = False
                 break
-        renderContext.world.process()
+        render_context.world.process()
     return 0
 
 
