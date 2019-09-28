@@ -5,11 +5,12 @@ import http
 peer_list = []
 port_num = 0
 
-def send_peer_list():
+def send_peer_list(req_ip):
     """Send a json of the peer list to the requestor."""
     data = {
         "response" : "OK",
-        "curr_peers" : peer_list
+        "curr_peers" : peer_list,
+        "your_ip" : req_ip
     }
     return json.dumps(data)
 
@@ -39,9 +40,13 @@ def decode_action(request):
     return json.loads(request)['request']
 
 
-if __name__ == 'main':
-    
+def main():
+    """Main function of the tracker server."""
+
     server_port = 12000
+    if sys.argv[2] is not None:
+        server_port = int(sys.argv[2])
+
     server_socket = socket(AF_INET,SOCK_STREAM)
     server_socket.bind(('',server_port))
     server_socket.listen(1)
@@ -56,18 +61,21 @@ if __name__ == 'main':
         requested_action = decode_action(request)
 
         if (requested_action == 'ADD'):
-            requested_ip = json.loads(request)['ip']
-            connection_socket.send(add_peer(requested_ip))
-            print(requested_ip + 'added')
+            connection_socket.send(add_peer(addr[0]))
+            print(addr[0] + 'added')
 
         elif(requested_action == 'REMOVE'):
-            requested_ip = json.loads(request)['ip']
-            connection_socket.send(remove_peer(requested_ip))
-            print(requested_ip + 'deleted')
+            connection_socket.send(remove_peer(addr[0]))
+            print(addr[0] + 'deleted')
 
         elif('PEERS'):
-            connection_socket.send(send_peer_list())
+            connection_socket.send(send_peer_list(addr[0]))
             print('Peer list sent to ' + addr[0])
 
         else:
             print('Unknown action: ' + requested_action)
+    
+        connection_socket.close()
+
+if __name__ == 'main':
+    main()    
