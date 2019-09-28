@@ -13,7 +13,9 @@ def run():
     global running
     running = True
     while running:
-        input.handle_input()
+        result = input.handle_input()
+        if result == 'QUIT':
+            running = False
         rendering.render_context.world.process()
     return 0
 

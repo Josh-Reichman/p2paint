@@ -7,14 +7,13 @@ is_mouse_down = False
 
 
 def handle_events():
-    global  is_mouse_down
+    global is_mouse_down
 
     events = sdl2.ext.get_events()
 
     for event in events:
         if event.type == sdl2.SDL_QUIT:
-            running = False
-            break
+            return 'QUIT'
         elif event.type == sdl2.SDL_MOUSEBUTTONDOWN:
             is_mouse_down = True
         elif event.type == sdl2.SDL_MOUSEBUTTONUP:
@@ -30,5 +29,6 @@ def handle_mouse():
 
 
 def handle_input():
-    handle_events()
+    result = handle_events()
     handle_mouse()
+    return result
