@@ -2,7 +2,6 @@ import sys
 import os
 import sdl2
 import sdl2.ext
-import sdl2.sdlttf as ttf
 
 
 WHITE = sdl2.ext.Color(255, 255, 255)
