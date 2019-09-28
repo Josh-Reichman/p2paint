@@ -1,5 +1,5 @@
 import sys
-import rendering, objects, networking
+import rendering, objects, networking, input
 
 
 running = True
@@ -12,7 +12,7 @@ def run():
     global running
     running = True
     while running:
-        rendering.handle_events()
+        input.handle_input()
         rendering.render_context.world.process()
     return 0
 

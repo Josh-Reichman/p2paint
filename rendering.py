@@ -3,6 +3,7 @@ import os
 import sdl2
 import sdl2.ext
 
+debug = True
 
 WHITE = sdl2.ext.Color(255, 255, 255)
 BLACK = sdl2.ext.Color(0, 0, 0)
@@ -55,12 +56,3 @@ def init_rendering():
     window.show()
 
     render_context = RenderContext(window)
-
-
-def handle_events():
-    events = sdl2.ext.get_events()
-
-    for event in events:
-        if event.type == sdl2.SDL_QUIT:
-            running = False
-            break
