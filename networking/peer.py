@@ -1,5 +1,6 @@
 from socket import *
 import json
+import sys
 
 hostname = ''
 port = -1
@@ -7,6 +8,8 @@ my_ip = -1
 peers = []
 
 def main():
+    global hostname, port 
+
     hostname = sys.argv[1]
     port = int(sys.argv[2])
 
@@ -20,7 +23,7 @@ def __create_request(request):
     data = {
         "request" : request
     }
-    return json.dumps(data)
+    return json.dumps(data).encode()
 
 
 def send_add_request():
@@ -35,6 +38,8 @@ def send_add_request():
 
 def send_peers_request():
     """Request the peers from the tracker."""
+    global my_ip, peers
+
     client_socket = socket(AF_INET, SOCK_STREAM)
     client_socket.connect((hostname, port))
     client_socket.send(__create_request('PEERS'))
@@ -61,5 +66,5 @@ def send_remove_request():
     client_socket.close()
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     main()
