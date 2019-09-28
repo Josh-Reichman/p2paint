@@ -28,9 +28,10 @@ class RenderContext:
         self.world = sdl2.ext.World()
         self.sdl_renderer = sdl2.ext.TextureSpriteRenderSystem(self.window)
         # initialize renderer and sprite factory
-        self.sprite_renderer = SoftwareRenderer(self.window)
-        self.world.add_system(self.sprite_renderer)
+        # self.sprite_renderer = SoftwareRenderer(self.window)
+        # self.world.add_system(self.sprite_renderer)
         self.sprite_factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=self.sdl_renderer)
+
 
     def CreateSquare(self, position=(0, 0), size=(20, 20), color=WHITE):
         square_sprite = self.sprite_factory.from_color(color, size=size)
@@ -51,6 +52,10 @@ class Renderable(sdl2.ext.Entity):
         self.sprite.y = posy
 
     def Move(self, x, y):
+        self.sprite.x = x
+        self.sprite.y = y
+
+    def MoveAdditive(self, x, y):
         self.sprite.x += x
         self.sprite.y += y
 

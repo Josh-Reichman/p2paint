@@ -4,6 +4,8 @@ import sdl2
 debug = True
 
 is_mouse_down = False
+x = 0
+y = 0
 
 
 def handle_events():
@@ -21,7 +23,8 @@ def handle_events():
 
 
 def handle_mouse():
-
+    global x
+    global y
     x, y = sdl2.c_int(), sdl2.c_int()
     sdl2.SDL_GetMouseState(x, y)
     if debug:
@@ -32,3 +35,9 @@ def handle_input():
     result = handle_events()
     handle_mouse()
     return result
+
+def get_x():
+    return x
+
+def get_y():
+    return y
