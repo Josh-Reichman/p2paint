@@ -10,8 +10,8 @@ def run():
     # TODO: create objects that exist at start here
     object_list = [
         objects.Object(rendering.render_context.CreateSquare(position=(100, 100), size=(60, 60))),
-        objects.Object(rendering.render_context.CreateSquare(position=(200, 200), size=(60, 60))),
-        objects.Object(rendering.render_context.CreateSquare(position=(300, 300), size=(60, 60)))
+        objects.Object(rendering.render_context.CreatePoint(position=(200, 200))),
+        objects.Object(rendering.render_context.CreateCircle(position=(300, 300), size=(60, 60)))
     ]
     global running
     running = True

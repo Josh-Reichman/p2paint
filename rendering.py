@@ -2,6 +2,8 @@ import sys
 import os
 import sdl2
 import sdl2.ext
+import ctypes
+import numpy as np
 
 debug = True
 
@@ -19,8 +21,13 @@ class RenderContext:
         self.sdl_renderer = sdl2.SDL_CreateRenderer(window, -1, sdl2.SDL_RENDERER_ACCELERATED)
 
     def CreateSquare(self, position=(0, 0), size=(20, 20), color=WHITE):
-        square = Renderable(self.world, position[0], position[1], size[0], size[1])
-        return square
+        return Square(self.world, position[0], position[1], size[0], size[1])
+
+    def CreatePoint(self, position=(0, 0), size=(20, 20), color=WHITE):
+        return Point(self.world, position[0], position[1], size[0], size[1])
+
+    def CreateCircle(self, position=(0, 0), size=(20, 20), color=WHITE):
+        return Circle(self.world, position[0], position[1], size[0], size[1])
 
 
 class Renderable:
@@ -39,8 +46,34 @@ class Renderable:
         self.y += y
 
     def render(self, render_context):
+        pass
+
+
+class Square(Renderable):
+    def render(self, render_context):
         sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(self.x, self.y, self.sx, self.sy))
 
+
+class Point(Renderable):
+    def render(self, render_context):
+        sdl2.SDL_RenderDrawPoint(render_context.sdl_renderer, self.x, self.y)
+
+
+class Circle(Renderable):
+    def render(self, render_context):
+        point = sdl2.SDL_Point(self.x, self.y)
+        point2 = sdl2.SDL_Point(self.x+1, self.y+1)
+
+        r = self.sx
+
+        theta = np.linspace(0, 2*np.pi, 400)
+        points = np.stack((np.cos(theta)*r + self.x, np.sin(theta)*r + self.y), axis=-1).astype(int).tolist()
+        points = [tuple(p) for p in points]
+
+        num_points = len(points)
+
+        points = (sdl2.SDL_Point * len(points))(*points)
+        sdl2.SDL_RenderDrawPoints(render_context.sdl_renderer, points, num_points)
 
 def init_rendering():
 
@@ -48,9 +81,7 @@ def init_rendering():
 
     # initialize window
     sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING)
-    #window = sdl2.ext.Window("Peer 2 Paint", size=(800, 800))
     window = sdl2.SDL_CreateWindow("Peer 2 Paint".encode('utf-8'), sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 800, 800, 0)
-    #window.show()
 
     render_context = RenderContext(window)
 
@@ -60,11 +91,6 @@ def clear():
     sdl2.SDL_RenderClear(render_context.sdl_renderer)
     sdl2.SDL_SetRenderDrawColor(render_context.sdl_renderer, 255, 255, 255, 255)
 
-def swap():
 
-    #square_sprite = sdl2.SDL_CreateTexture(render_context.sdl_renderer, sdl2.SDL_PIXELFORMAT_RGB888,
-    #                                       sdl2.SDL_TEXTUREACCESS_STATIC, 100, 100)
-    #sdl2.SDL_SetTextureBlendMode(square_sprite, sdl2.SDL_BLENDMODE_NONE)
-    #sdl2.SDL_RenderCopy(render_context.sdl_renderer, square_sprite, sdl2.SDL_Rect(0, 0, 100, 100), sdl2.SDL_Rect(0, 0, 100, 100))
-    #sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(0, 0, 100, 100))
+def swap():
     sdl2.SDL_RenderPresent(render_context.sdl_renderer)
