@@ -27,9 +27,6 @@ class RenderContext:
         self.window = window
         self.world = sdl2.ext.World()
         self.sdl_renderer = sdl2.ext.TextureSpriteRenderSystem(self.window)
-        # initialize renderer and sprite factory
-        # self.sprite_renderer = SoftwareRenderer(self.window)
-        # self.world.add_system(self.sprite_renderer)
         self.sprite_factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=self.sdl_renderer)
 
 
@@ -60,17 +57,8 @@ class Renderable(sdl2.ext.Entity):
         self.sprite.y += y
 
     def render(self, render_context):
-        renderer = render_context.sdl_renderer._renderer
-        sdl2.SDL_SetRenderTarget(renderer.sdlrenderer, self.sprite.texture)
-        sdl2.SDL_SetRenderDrawColor(renderer.sdlrenderer, 255, 0, 0, 255)
-        sdl2.SDL_RenderDrawPoint(renderer.sdlrenderer, 5, 5)
-        sdl2.SDL_SetRenderTarget(renderer.sdlrenderer, None)
         render_context.sdl_renderer.render(self.sprite)
-        #sdl2.SDL_RenderCopy(renderer.sdlrenderer, self.sprite.texture)
-        #self.sprite.texture.render()
 
-        # SDL_SetRenderTarget(gRenderer, NULL);
-        # gTargetTexture.render(0, 0, NULL, angle, & screenCenter );
 
 def init_rendering():
 
