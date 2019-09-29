@@ -2,23 +2,16 @@ import sys
 import os
 import sdl2
 import sdl2.ext
+import ctypes
+import numpy as np
+from sdl2 import SDL_WINDOW_FULLSCREEN_DESKTOP
 
 debug = True
 
 WHITE = sdl2.ext.Color(255, 255, 255)
-RED = sdl2.ext.Color(255, 0, 0)
 BLACK = sdl2.ext.Color(0, 0, 0)
 
 window, render_context = None, None
-
-
-class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
-    def __init__(self, window):
-        super(SoftwareRenderer, self).__init__(window)
-
-    def render(self, components):
-        sdl2.ext.fill(self.surface, BLACK)
-        super(SoftwareRenderer, self).render(components)
 
 
 class RenderContext:
@@ -26,58 +19,91 @@ class RenderContext:
     def __init__(self, window):
         self.window = window
         self.world = sdl2.ext.World()
-        self.sdl_renderer = sdl2.ext.TextureSpriteRenderSystem(self.window)
-        # initialize renderer and sprite factory
-        self.sprite_renderer = SoftwareRenderer(self.window)
-        self.world.add_system(self.sprite_renderer)
-        self.sprite_factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=self.sdl_renderer)
+        self.sdl_renderer = sdl2.SDL_CreateRenderer(window, -1, sdl2.SDL_RENDERER_ACCELERATED)
+        sdl2.SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP)
+        sdl2.SDL_GL_SetSwapInterval(1)
 
     def CreateSquare(self, position=(0, 0), size=(20, 20), color=WHITE):
-        square_sprite = self.sprite_factory.from_color(color, size=size)
-        square = Renderable(self.world, square_sprite, position[0], position[1])
-        return square
+        return Square(self.world, position[0], position[1], size[0], size[1])
 
-    def CreatePoint(self, position=(0, 0), color=WHITE):
-        #sdl2.SDL_RenderDrawPoint(self.sdl_renderer.sdlrenderer, position[0], position[1])
-        point_sprite = self.sprite_factory.create_texture_sprite(self.sdl_renderer._renderer, (10, 10), access=sdl2.SDL_TEXTUREACCESS_TARGET)
+    def CreatePoint(self, position=(0, 0), size=(20, 20), color=WHITE):
+        return Point(self.world, position[0], position[1], size[0], size[1])
 
-        return Renderable(self.world, point_sprite, position[0], position[1])
+    def CreateCircle(self, position=(0, 0), size=(20, 20), color=WHITE):
+        return Circle(self.world, position[0], position[1], size[0], size[1])
 
 
-class Renderable(sdl2.ext.Entity):
-    def __init__(self, world, sprite, posx=0, posy=0):
-        self.sprite = sprite
-        self.sprite.x = posx
-        self.sprite.y = posy
+class Renderable:
+    def __init__(self, world, posx=0, posy=0, sizex=100, sizey=100):
+        self.x = posx
+        self.y = posy
+        self.sx = sizex
+        self.sy = sizey
 
-    def Move(self, x, y):
-        self.sprite.x += x
-        self.sprite.y += y
+    def move(self, x, y):
+        self.x = x
+        self.y = y
+
+    def move_additive(self, x, y):
+        self.x += x
+        self.y += y
 
     def render(self, render_context):
-        renderer = render_context.sdl_renderer._renderer
-        sdl2.SDL_SetRenderTarget(renderer.sdlrenderer, self.sprite.texture)
-        sdl2.SDL_SetRenderDrawColor(renderer.sdlrenderer, 255, 0, 0, 255)
-        sdl2.SDL_RenderDrawPoint(renderer.sdlrenderer, 5, 5)
-        sdl2.SDL_SetRenderTarget(renderer.sdlrenderer, None)
-        render_context.sdl_renderer.render(self.sprite)
-        #sdl2.SDL_RenderCopy(renderer.sdlrenderer, self.sprite.texture)
-        #self.sprite.texture.render()
+        pass
 
-        # SDL_SetRenderTarget(gRenderer, NULL);
-        # gTargetTexture.render(0, 0, NULL, angle, & screenCenter );
+
+class Square(Renderable):
+    def render(self, render_context):
+        sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(self.x-self.sx//2, self.y-self.sy//2, self.sx, self.sy))
+
+    def contains(self, point):
+        return self.x-self.sx//2 < point[0] < self.x+self.sx//2 and self.y-self.sy//2 < point[1] < self.y+self.sy//2
+
+class Point(Renderable):
+    def render(self, render_context):
+        sdl2.SDL_RenderDrawPoint(render_context.sdl_renderer, self.x, self.y)
+
+    def contains(self, point):
+        return point[0] == self.x and point[1] == self.y
+
+
+class Circle(Renderable):
+    def render(self, render_context):
+        point = sdl2.SDL_Point(self.x, self.y)
+        point2 = sdl2.SDL_Point(self.x+1, self.y+1)
+
+        r = self.sx / 2
+
+        theta = np.linspace(0, 2*np.pi, 400)
+        points = np.stack((np.cos(theta)*r + self.x, np.sin(theta)*r + self.y), axis=-1).astype(int).tolist()
+        points = [tuple(p) for p in points]
+
+        num_points = len(points)
+
+        points = (sdl2.SDL_Point * len(points))(*points)
+        sdl2.SDL_RenderDrawPoints(render_context.sdl_renderer, points, num_points)
+
+    def contains(self, point):
+        r = self.sx / 2
+        return (point[0] - self.x)**2 + (point[1] - self.y)**2 < r**2
+
 
 def init_rendering():
 
     global window, render_context
 
     # initialize window
-    sdl2.ext.init()
-    window = sdl2.ext.Window("Peer 2 Paint", size=(800, 800))
-    window.show()
+    sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING)
+    window = sdl2.SDL_CreateWindow("Peer 2 Paint".encode('utf-8'), sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 800, 800, 0)
 
     render_context = RenderContext(window)
 
 
 def clear():
-    sdl2.SDL_RenderClear(render_context.sdl_renderer.sdlrenderer)
+    sdl2.SDL_SetRenderDrawColor(render_context.sdl_renderer, 0, 0, 0, 255)
+    sdl2.SDL_RenderClear(render_context.sdl_renderer)
+    sdl2.SDL_SetRenderDrawColor(render_context.sdl_renderer, 255, 255, 255, 255)
+
+
+def swap():
+    sdl2.SDL_RenderPresent(render_context.sdl_renderer)
