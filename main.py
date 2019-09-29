@@ -32,7 +32,7 @@ def run():
     y_init = 200
     y_post = 200
     sel_index = 0
-    friction = 1
+    friction = 1.0
 
     while running:
         result = input.handle_input()
@@ -45,13 +45,13 @@ def run():
         for o in object_list:
             o.move_additive(o.vx, o.vy)
             if o.vx > 0:
-                o.vx = max(o.vx - friction, 0)
+                o.vx = max(o.vx - friction, 0.0)
             else:
-                o.vx = min(o.vx + friction, 0)
+                o.vx = min(o.vx + friction, 0.0)
             if o.vy > 0:
-                o.vy = max(o.vy - friction, 0)
+                o.vy = max(o.vy - friction, 0.0)
             else:
-                o.vy = min(o.vy + friction, 0)
+                o.vy = min(o.vy + friction, 0.0)
         if input.is_mouse_down:
             if not clicked:
                 x_init = input.x.value
