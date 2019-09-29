@@ -32,6 +32,9 @@ class RenderContext:
     def CreateCircle(self, position=(0, 0), size=(20, 20), color=WHITE):
         return Circle(self.world, position[0], position[1], size[0], size[1])
 
+    def CreateLine(self, position=(0, 0), size=(20, 20), color=WHITE):
+        return Line(self.world, position[0], position[1], size[0], size[1])
+
 
 class Renderable:
     def __init__(self, world, posx=0, posy=0, sizex=100, sizey=100):
@@ -64,7 +67,21 @@ class Point(Renderable):
         sdl2.SDL_RenderDrawPoint(render_context.sdl_renderer, self.x, self.y)
 
     def contains(self, point):
-        return point[0] == self.x and point[1] == self.y
+        return False
+
+
+class Line(Renderable):
+    def render(self, render_context):
+        sdl2.SDL_RenderDrawLine(
+            render_context.sdl_renderer,
+            self.x,
+            self.y,
+            self.x + self.sx,
+            self.y + self.sy
+        )
+
+    def contains(self, point):
+        return False
 
 
 class Circle(Renderable):

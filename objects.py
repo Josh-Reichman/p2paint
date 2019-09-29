@@ -10,6 +10,7 @@ class Object:
             self.graphic = graphic
         else:
             pass
+        self.vx, self.vy = 0, 0
 
     def serialize(self):
         # TODO Export data to transfer to peers

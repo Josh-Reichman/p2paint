@@ -1,7 +1,7 @@
 import sdl2
 
 
-debug = True
+debug = False
 
 is_mouse_down = False
 x = 0

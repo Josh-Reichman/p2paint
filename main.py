@@ -15,11 +15,13 @@ def update_selection(object_list, click_point, sel_index):
 def run():
     rendering.init_rendering()
 
+    line = rendering.render_context.CreateLine(position=(0, 0), size=(40, 40))
+
     # TODO: create objects that exist at start here
     object_list = [
         objects.Object(rendering.render_context.CreateSquare(position=(100, 100), size=(60, 60))),
         objects.Object(rendering.render_context.CreatePoint(position=(200, 200))),
-        objects.Object(rendering.render_context.CreateCircle(position=(300, 300), size=(60, 60)))
+        objects.Object(rendering.render_context.CreateCircle(position=(300, 300), size=(60, 60))),
     ]
     global running
     running = True
@@ -30,33 +32,48 @@ def run():
     y_init = 200
     y_post = 200
     sel_index = 0
+    friction = 1
 
     while running:
         result = input.handle_input()
         if result == 'QUIT':
             running = False
         rendering.clear()
+        # render all objects
         [o.graphic.render(rendering.render_context) for o in object_list]
-        rendering.swap()
+        # update all objects' positions and velocities
+        for o in object_list:
+            o.move_additive(o.vx, o.vy)
+            if o.vx > 0:
+                o.vx = max(o.vx - friction, 0)
+            else:
+                o.vx = min(o.vx + friction, 0)
+            if o.vy > 0:
+                o.vy = max(o.vy - friction, 0)
+            else:
+                o.vy = min(o.vy + friction, 0)
         if input.is_mouse_down:
             if not clicked:
                 x_init = input.x.value
                 y_init = input.y.value
                 sel_index = update_selection(object_list, (x_init, y_init), sel_index)
+                line.move(input.x.value, input.y.value)
             if sel_index is not -1:
                 object_list[sel_index].move(input.x.value, input.y.value)
             clicked = True
             click_point = (input.x.value, input.y.value)
+            if object_list[sel_index].graphic.contains((input.x.value, input.y.value)):
+                line.sx, line.sy = input.x.value - line.x, input.y.value - line.y
+                line.render(rendering.render_context)
         else:
             if clicked:
                 if sel_index is not -1:
-                    object_list[sel_index].move_additive(input.x.value, input.y.value, x_init, y_init)
+                    object_list[sel_index].vx, object_list[sel_index].vy = input.x.value-x_init, input.y.value-y_init
                 clicked = False
                 x_post = input.x.value
                 y_post = input.y.value
-            else:
-                if sel_index is not -1:
-                    object_list[sel_index].move_additive(x_init-x_post, y_init-y_post)
+        rendering.swap()
+
     return 0
 
 
