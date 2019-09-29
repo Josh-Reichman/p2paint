@@ -51,10 +51,10 @@ class Renderable:
 
 class Square(Renderable):
     def render(self, render_context):
-        sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(self.x, self.y, self.sx, self.sy))
+        sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(self.x-self.sx//2, self.y-self.sy//2, self.sx, self.sy))
 
     def contains(self, point):
-        return self.x < point[0] < self.x + self.sx and self.y < point[1] < self.y + self.sy
+        return self.x-self.sx//2 < point[0] < self.x+self.sx//2 and self.y-self.sy//2 < point[1] < self.y+self.sy//2
 
 class Point(Renderable):
     def render(self, render_context):
