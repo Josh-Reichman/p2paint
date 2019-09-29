@@ -31,10 +31,8 @@ def main():
 
     try:
         while True:
-
             data = read_from_socket([listen_socket])
             
-
             if data is not None:
                 data = json.loads(data)
                 data = data['peers']
@@ -42,9 +40,8 @@ def main():
                     recv_establish_peer_connections
             else:
                 send_peers_request()
-                establish_connection_peer(peers[0])
-
-            
+                if len(peers) > 1:
+                    establish_connection_peer(peers[0])
 
             time.sleep(0.5)
 
