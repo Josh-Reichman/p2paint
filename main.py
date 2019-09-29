@@ -19,7 +19,8 @@ def run():
     object_list = [
         objects.Object(rendering.render_context.CreateSquare(position=(100, 100), size=(60, 60))),
         objects.Object(rendering.render_context.CreatePoint(position=(200, 200))),
-        objects.Object(rendering.render_context.CreateCircle(position=(300, 300), size=(60, 60)))
+        objects.Object(rendering.render_context.CreateCircle(position=(300, 300), size=(60, 60))),
+        objects.Object(rendering.render_context.CreateLine(position=(400, 400), size=(60, 60)))
     ]
     global running
     running = True
