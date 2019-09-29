@@ -20,7 +20,7 @@ peers_map = {
 }
 
 def main():
-    global hostname, port 
+    global hostname, port, peers 
 
     hostname = sys.argv[1]
 
@@ -31,7 +31,7 @@ def main():
 
     try:
         while True:
-            data = read_from_socket([listen_socket])
+            data = read_from_socket(listen_socket)
             
             if data is not None:
                 data = json.loads(data)
@@ -120,7 +120,6 @@ def recv_establish_peer_connections(ip, socket):
 
         peers_map[str(selected_peer)] = (listen_socket, peer_socket)
 
-
     
 def __select_peer_connection():
     for peer in peers_map:
@@ -139,11 +138,15 @@ def __get_available_connections():
 
 
 def read_from_socket(socket):
-    read, write, error = select.select(socket, [], [])
+    read, write, error = select.select([socket], [], [])
     for sock in read:
         if sock == socket:
-            data = sock.recv(1024)
-            return data.decode()
+            try:
+                data = sock.recv(1024)
+                return data.decode()
+            except OSError:
+                print('not connected')
+            
 
 
 
@@ -193,6 +196,7 @@ def __filter_ip(var):
 
 def send_remove_request():
     """Remove self from the tracker and thus the p2p network."""
+
     client_socket = socket(AF_INET, SOCK_STREAM)
     client_socket.connect((hostname, port))
     client_socket.send(__create_request('REMOVE'))
