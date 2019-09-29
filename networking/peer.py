@@ -42,7 +42,7 @@ def main():
                     recv_establish_peer_connections
             else:
                 send_peers_request()
-            #     establish_connection_peer(peers[0])
+                establish_connection_peer(peers[0])
 
             
 
@@ -127,7 +127,7 @@ def recv_establish_peer_connections(ip, socket):
     
 def __select_peer_connection():
     for peer in peers_map:
-        if peers_map[peer] is not None:
+        if peers_map[peer] is None:
             return int(peer)
     return None
 
