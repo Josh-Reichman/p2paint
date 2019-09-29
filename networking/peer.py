@@ -5,15 +5,18 @@ import time
 import select
 
 hostname = ''
-port = -1
+port = 12021
 my_ip = -1
 peers = []
 
+# this needs to be (listen_socket, writing_socket)
+# North will be base_port + 1
+# East will be base_port + 4
 peers_map = {
-    "North" : None,
-    "South" : None,
-    "West"  : None,
-    "East"  : None
+    "1" : None,
+    "2" : None,
+    "3"  : None,
+    "4"  : None
 }
 
 def main():
@@ -27,27 +30,19 @@ def main():
     try:
         while True:
             send_peers_request()
-
-            try:
-                for direc in peers_map:
-                    peers_map[direc] = create_socket_pair(peers[0])
-            except IndexError:
-                # No peers connected, can't reference the peers[0]
-                time.sleep(0.5)
-                continue
-
-            for direc in peers_map:
-                read_from_socket(direc[0])
-                write_to_socket(direc[1], 'bruh momento'.encode())
             
             time.sleep(0.5)
 
     except KeyboardInterrupt:
         send_remove_request()
-        for direc in peers_map:
+        for direc in peers_map.items():
             direc[0][0].close()
             direc[1].close()
 
+
+
+# info needed:
+# listen_socket, ip, port
 
 
 
@@ -55,32 +50,87 @@ def main():
 # Functions for interacting with other peers
 #
 
-def create_socket_pair(peer_ip):
-    port = 12012
 
-    listen_socket = socket(AF_INET,SOCK_STREAM)
-    listen_socket.bind(('',port))
+def establish_connection_peer(ip):
+    global port
 
-    peer_socket = socket(AF_INET, SOCK_STREAM)
-    peer_socket.connect((peer_ip, port))
+    selected_peer = __select_peer_connection()
+    # validates that new connections can be made
+    if selected_peer != None:
+        client_socket = socket(AF_INET, SOCK_STREAM)
+        client_socket.connect((ip, port))
 
-    return ([listen_socket], peer_socket)
+        data = {
+            "peer" : "ESTABLISH",
+        }
+
+        client_socket.send(json.dumps(data).encode())
+
+        ports = json.loads(client_socket.recv(1024).decode())['ports']
+
+        for x in range(0, 3):
+            if ports[x]:
+                peer_socket = socket(AF_INET, SOCK_STREAM)
+                peer_socket.connect((ip, port + x))
+
+                listen_socket = socket(AF_INET, SOCK_STREAM)
+                listen_socket.bind(('', port + selected_peer))
+                
+                data = {
+                    "RESPONSE" : "OK",
+                    "port_offset" : selected_peer
+                }
+                client_socket.send(json.dumps(data).encode())
+
+                client_socket.close()
+                peers_map[str(selected_peer)] = (listen_socket, peer_socket)
+                break
+    else:
+        # Not able to connect with this peer
+        print('cringe, not being able to connect bro pls')
 
 
-def read_from_socket(socket):
-    read, write, error = select.select(socket, [], [])
+def recv_establish_peer_connections(ip, socket):
+    global port
 
-    for sock in read:
-        if sock == socket:
-            data = sock.recv(1024)
-            print(data)
+    selected_peer = __select_peer_connection()
+    # validates that new connections can be made
+    if selected_peer != None:
+        listen_socket = socket(AF_INET, SOCK_STREAM)
+        listen_socket.bind(('', port + selected_peer))
 
-            # data here will be a JSON changed to rendering instructions on this peer
+        socket.connect((ip, port))
 
-def write_to_socket(socket, str_data):
-    if str_data is not None:
-        socket.send(str_data)
-        
+        data = {
+            "ports" : __get_available_connections()
+        }
+
+        socket.send(json.dumps(data).encode())
+
+        peer = json.loads(socket.recv(1024).decode())['port_offset']
+
+        peer_socket = socket(AF_INET, SOCK_STREAM)
+        peer_socket.connect((ip, port + int(peer)))
+
+        peers_map[str(selected_peer)] = (listen_socket, peer_socket)
+
+
+    
+def __select_peer_connection():
+    for peer in peers_map:
+        if peers_map[peer] is not None:
+            return int(peer)
+    return None
+
+
+def __get_available_connections():
+    avail_peers = []
+    for peer in peers_map:
+        if peer is not None:
+            avail_peers.append(True)
+        else:
+            avail_peers.append(False)
+
 
 #
 # Functions for interacting with the tracker server 
