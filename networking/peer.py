@@ -32,12 +32,17 @@ def main():
     try:
         while True:
 
-            data = json.loads(read_from_socket([listen_socket]).decode())['peers']
-            if data == 'ESTABLISH':
-                recv_establish_peer_connections
+            data = read_from_socket([listen_socket])
+            
+
+            if data is not None:
+                data = json.loads(data)
+                data = data['peers']
+                if data == 'ESTABLISH':
+                    recv_establish_peer_connections
             else:
                 send_peers_request()
-                establish_connection_peer(peers[0])
+            #     establish_connection_peer(peers[0])
 
             
 
@@ -170,10 +175,10 @@ def send_add_request():
 
 def send_peers_request():
     """Request the peers from the tracker."""
-    global my_ip, peers
+    global my_ip, peers, hostname
 
     client_socket = socket(AF_INET, SOCK_STREAM)
-    client_socket.connect((hostname, port))
+    client_socket.connect((hostname, 12000))
     client_socket.send(__create_request('PEERS'))
 
     response = json.loads(client_socket.recv(2048))
