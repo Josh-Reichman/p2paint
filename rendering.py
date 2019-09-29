@@ -53,10 +53,15 @@ class Square(Renderable):
     def render(self, render_context):
         sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(self.x, self.y, self.sx, self.sy))
 
+    def contains(self, point):
+        return self.x < point[0] < self.x + self.sx and self.y < point[1] < self.y + self.sy
 
 class Point(Renderable):
     def render(self, render_context):
         sdl2.SDL_RenderDrawPoint(render_context.sdl_renderer, self.x, self.y)
+
+    def contains(self, point):
+        return point[0] == self.x and point[1] == self.y
 
 
 class Circle(Renderable):
@@ -64,7 +69,7 @@ class Circle(Renderable):
         point = sdl2.SDL_Point(self.x, self.y)
         point2 = sdl2.SDL_Point(self.x+1, self.y+1)
 
-        r = self.sx
+        r = self.sx / 2
 
         theta = np.linspace(0, 2*np.pi, 400)
         points = np.stack((np.cos(theta)*r + self.x, np.sin(theta)*r + self.y), axis=-1).astype(int).tolist()
@@ -74,6 +79,12 @@ class Circle(Renderable):
 
         points = (sdl2.SDL_Point * len(points))(*points)
         sdl2.SDL_RenderDrawPoints(render_context.sdl_renderer, points, num_points)
+
+    def contains(self, point):
+        #return self.x < point[0] < self.x + self.sx and self.y < point[1] < self.y + self.sy
+        r = self.sx / 2
+        return (point[0] - self.x)**2 + (point[1] - self.y)**2 < r**2
+
 
 def init_rendering():
 
