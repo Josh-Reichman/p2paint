@@ -10,7 +10,7 @@ class Object:
             self.graphic = graphic
         else:
             pass
-        self.vx, self.vy = 0, 0
+        self.vx, self.vy = 0.0, 0.0
 
     def serialize(self):
         # TODO Export data to transfer to peers
@@ -23,8 +23,8 @@ class Object:
     def move(self, x, y):
         rendering.Renderable.move(self.graphic, x, y)
 
-    def move_additive(self, x, y, x_init=0, y_init=0):
-        rendering.Renderable.move_additive(self.graphic, (x_init - x) // 10, (y_init - y) // 10)
+    def move_additive(self, x, y, x_init=0.0, y_init=0.0):
+        rendering.Renderable.move_additive(self.graphic, (x_init - x) / 10, (y_init - y) / 10)
 
     def transfer_to_peer(self, peer):
         # TODO Transfer object to peer
