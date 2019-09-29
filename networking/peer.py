@@ -161,7 +161,7 @@ def __create_request(request):
 def send_add_request():
     """Requests to be added as a peer."""
     client_socket = socket(AF_INET, SOCK_STREAM)
-    client_socket.connect((hostname, 120000))
+    client_socket.connect((hostname, 12000))
     client_socket.send(__create_request('ADD'))
 
     print(client_socket.recv(1024))
