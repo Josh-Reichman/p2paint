@@ -24,6 +24,8 @@ def handle_events():
                 return 'CIRCLE'
             elif event.key.keysym.sym == sdl2.SDLK_p:
                 return 'POINT'
+            elif event.key.keysym.sym == sdl2.SDLK_r:
+                return 'RESTART'
         elif event.type == sdl2.SDL_MOUSEBUTTONDOWN:
             is_mouse_down = True
         elif event.type == sdl2.SDL_MOUSEBUTTONUP:

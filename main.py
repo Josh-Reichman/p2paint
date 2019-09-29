@@ -46,6 +46,8 @@ def run():
             object_list.append(objects.Object(rendering.render_context.CreateCircle(position=(input.x, input.y), size=(60, 60))))
         elif result == 'POINT':
             object_list.append(objects.Object(rendering.render_context.CreatePoint(position=(input.x, input.y), size=(60, 60))))
+        elif result == 'RESTART':
+            sys.exit(run())
         rendering.clear()
         # render all objects
         [o.graphic.render(rendering.render_context) for o in object_list]
