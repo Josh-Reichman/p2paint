@@ -20,10 +20,10 @@ class Object:
         pass
 
     def move(self, x, y):
-        rendering.Renderable.Move(self.graphic, x, y)
+        rendering.Renderable.move(self.graphic, x, y)
 
     def move_additive(self, x, y, x_init=0, y_init=0):
-        rendering.Renderable.MoveAdditive(self.graphic, (x_init - x) // 10, (y_init - y)//10)
+        rendering.Renderable.move_additive(self.graphic, (x_init - x) // 10, (y_init - y) // 10)
 
     def transfer_to_peer(self, peer):
         # TODO Transfer object to peer
