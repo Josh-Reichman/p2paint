@@ -9,7 +9,7 @@ def update_selection(object_list, click_point, sel_index):
     for o, obj in enumerate(object_list):
         if obj.graphic.contains(click_point):
             return o
-    return sel_index
+    return -1
 
 
 def run():
@@ -43,17 +43,20 @@ def run():
                 x_init = input.x.value
                 y_init = input.y.value
                 sel_index = update_selection(object_list, (x_init, y_init), sel_index)
-            object_list[sel_index].move(input.x.value, input.y.value)
+            if sel_index is not -1:
+                object_list[sel_index].move(input.x.value, input.y.value)
             clicked = True
             click_point = (input.x.value, input.y.value)
         else:
             if clicked:
-                object_list[sel_index].move_additive(input.x.value, input.y.value, x_init, y_init)
+                if sel_index is not -1:
+                    object_list[sel_index].move_additive(input.x.value, input.y.value, x_init, y_init)
                 clicked = False
                 x_post = input.x.value
                 y_post = input.y.value
             else:
-                object_list[sel_index].move_additive(x_init-x_post, y_init-y_post)
+                if sel_index is not -1:
+                    object_list[sel_index].move_additive(x_init-x_post, y_init-y_post)
     return 0
 
 

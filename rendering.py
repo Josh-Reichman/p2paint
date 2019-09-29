@@ -81,7 +81,6 @@ class Circle(Renderable):
         sdl2.SDL_RenderDrawPoints(render_context.sdl_renderer, points, num_points)
 
     def contains(self, point):
-        #return self.x < point[0] < self.x + self.sx and self.y < point[1] < self.y + self.sy
         r = self.sx / 2
         return (point[0] - self.x)**2 + (point[1] - self.y)**2 < r**2
 
