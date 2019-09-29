@@ -4,6 +4,7 @@ import sdl2
 import sdl2.ext
 import ctypes
 import numpy as np
+from sdl2 import SDL_WINDOW_FULLSCREEN_DESKTOP
 
 debug = True
 
@@ -19,6 +20,8 @@ class RenderContext:
         self.window = window
         self.world = sdl2.ext.World()
         self.sdl_renderer = sdl2.SDL_CreateRenderer(window, -1, sdl2.SDL_RENDERER_ACCELERATED)
+        sdl2.SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP)
+        sdl2.SDL_GL_SetSwapInterval(1)
 
     def CreateSquare(self, position=(0, 0), size=(20, 20), color=WHITE):
         return Square(self.world, position[0], position[1], size[0], size[1])
@@ -37,11 +40,11 @@ class Renderable:
         self.sx = sizex
         self.sy = sizey
 
-    def Move(self, x, y):
+    def move(self, x, y):
         self.x = x
         self.y = y
 
-    def MoveAdditive(self, x, y):
+    def move_additive(self, x, y):
         self.x += x
         self.y += y
 
