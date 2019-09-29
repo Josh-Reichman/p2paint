@@ -14,9 +14,8 @@ def handle_events():
     global is_mouse_down
 
     events = sdl2.ext.get_events()
-
     for event in events:
-        if event.type == sdl2.SDL_QUIT:
+        if event.type == sdl2.SDL_QUIT or (event.type == sdl2.SDL_KEYUP and event.key.keysym.sym == sdl2.SDLK_q):
             return 'QUIT'
         elif event.type == sdl2.SDL_MOUSEBUTTONDOWN:
             is_mouse_down = True
