@@ -57,10 +57,10 @@ class Renderable:
 
 class Square(Renderable):
     def render(self, render_context):
-        sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(int(self.x-self.sx//2), int(self.y-self.sy//2), int(self.sx), int(self.sy)))
+        sdl2.SDL_RenderDrawRect(render_context.sdl_renderer, sdl2.SDL_Rect(int(self.x-self.sx/2), int(self.y-self.sy/2), int(self.sx), int(self.sy)))
 
     def contains(self, point):
-        return self.x-self.sx//2 < point[0] < self.x+self.sx//2 and self.y-self.sy//2 < point[1] < self.y+self.sy//2
+        return self.x-self.sx/2 < point[0] < self.x+self.sx/2 and self.y-self.sy/2 < point[1] < self.y+self.sy/2
 
 
 class Point(Renderable):
@@ -87,7 +87,7 @@ class Line(Renderable):
 
 class Circle(Renderable):
     def render(self, render_context):
-        
+
         r = self.sx / 2
 
         theta = np.linspace(0, 2*np.pi, 400)
