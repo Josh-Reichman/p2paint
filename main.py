@@ -37,8 +37,15 @@ def run():
 
     while running:
         result = input.handle_input()
+        # execute on input
         if result == 'QUIT':
             running = False
+        elif result == 'SQUARE':
+            object_list.append(objects.Object(rendering.render_context.CreateSquare(position=(input.x, input.y), size=(60, 60))))
+        elif result == 'CIRCLE':
+            object_list.append(objects.Object(rendering.render_context.CreateCircle(position=(input.x, input.y), size=(60, 60))))
+        elif result == 'POINT':
+            object_list.append(objects.Object(rendering.render_context.CreatePoint(position=(input.x, input.y), size=(60, 60))))
         rendering.clear()
         # render all objects
         [o.graphic.render(rendering.render_context) for o in object_list]
