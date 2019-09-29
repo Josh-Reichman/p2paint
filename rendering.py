@@ -67,22 +67,21 @@ class Point(Renderable):
         sdl2.SDL_RenderDrawPoint(render_context.sdl_renderer, self.x, self.y)
 
     def contains(self, point):
-        return point[0] == self.x and point[1] == self.y
+        return False
 
 
 class Line(Renderable):
     def render(self, render_context):
         sdl2.SDL_RenderDrawLine(
             render_context.sdl_renderer,
-            self.x - self.sx//2,
-            self.y - self.sy//2,
-            self.x + self.sx//2,
-            self.y + self.sy//2
+            self.x,
+            self.y,
+            self.x + self.sx,
+            self.y + self.sy
         )
 
     def contains(self, point):
-        return self.x - self.sx//2 < point[0] < self.x + self.sx//2\
-            and (point[0] - self.x)**2 + (point[1] - self.y)**2 == 0
+        return False
 
 
 class Circle(Renderable):
