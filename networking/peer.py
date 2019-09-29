@@ -31,19 +31,24 @@ def main():
 
     try:
         while True:
-            data = read_from_socket(listen_socket)
+            try:
+                connection_socket, addr = listen_socket.accept()
+                data = read_from_socket(connection_socket)
             
-            if data is not None:
-                data = json.loads(data)
-                data = data['peers']
-                if data == 'ESTABLISH':
-                    recv_establish_peer_connections
-            else:
-                send_peers_request()
-                if len(peers) > 1:
-                    establish_connection_peer(peers[0])
+                if data is not None:
+                    data = json.loads(data)
+                    data = data['peers']
+                    if data == 'ESTABLISH':
+                        recv_establish_peer_connections
+                else:
+                    send_peers_request()
+                    if len(peers) > 1:
+                        establish_connection_peer(peers[0])
+            except OSError as e:
+                print(e)
 
             time.sleep(0.5)
+            
 
     except KeyboardInterrupt:
         send_remove_request()
@@ -144,8 +149,8 @@ def read_from_socket(socket):
             try:
                 data = sock.recv(1024)
                 return data.decode()
-            except OSError:
-                print('not connected')
+            except OSError as e:
+                print(str(e))
             
 
 
