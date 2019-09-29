@@ -23,14 +23,24 @@ def main():
     global hostname, port 
 
     hostname = sys.argv[1]
-    port = int(sys.argv[2])
 
     send_add_request()
 
+    listen_socket = socket(AF_INET, SOCK_STREAM)
+    listen_socket.bind(('', port))
+
     try:
         while True:
-            send_peers_request()
+
+            data = json.loads(read_from_socket([listen_socket]).decode())['peers']
+            if data == 'ESTABLISH':
+                recv_establish_peer_connections
+            else:
+                send_peers_request()
+                establish_connection_peer(peers[0])
+
             
+
             time.sleep(0.5)
 
     except KeyboardInterrupt:
@@ -38,12 +48,6 @@ def main():
         for direc in peers_map.items():
             direc[0][0].close()
             direc[1].close()
-
-
-
-# info needed:
-# listen_socket, ip, port
-
 
 
 #
@@ -132,6 +136,15 @@ def __get_available_connections():
             avail_peers.append(False)
 
 
+def read_from_socket(socket):
+    read, write, error = select.select(socket, [], [])
+    for sock in read:
+        if sock == socket:
+            data = sock.recv(1024)
+            return data.decode()
+
+
+
 #
 # Functions for interacting with the tracker server 
 #
@@ -148,7 +161,7 @@ def __create_request(request):
 def send_add_request():
     """Requests to be added as a peer."""
     client_socket = socket(AF_INET, SOCK_STREAM)
-    client_socket.connect((hostname, port))
+    client_socket.connect((hostname, 12000))
     client_socket.send(__create_request('ADD'))
 
     print(client_socket.recv(1024))
