@@ -32,6 +32,7 @@ def run():
     y_init = 200
     y_post = 200
     sel_index = 0
+    friction = 1
 
     while running:
         result = input.handle_input()
@@ -40,9 +41,17 @@ def run():
         rendering.clear()
         # render all objects
         [o.graphic.render(rendering.render_context) for o in object_list]
-        # update all objects' positions
+        # update all objects' positions and velocities
         for o in object_list:
             o.move_additive(o.vx, o.vy)
+            if o.vx > 0:
+                o.vx = max(o.vx - friction, 0)
+            else:
+                o.vx = min(o.vx + friction, 0)
+            if o.vy > 0:
+                o.vy = max(o.vy - friction, 0)
+            else:
+                o.vy = min(o.vy + friction, 0)
         if input.is_mouse_down:
             if not clicked:
                 x_init = input.x.value
@@ -60,14 +69,9 @@ def run():
             if clicked:
                 if sel_index is not -1:
                     object_list[sel_index].vx, object_list[sel_index].vy = input.x.value-x_init, input.y.value-y_init
-                    #object_list[sel_index].move_additive(input.x.value, input.y.value, x_init, y_init)
                 clicked = False
                 x_post = input.x.value
                 y_post = input.y.value
-            else:
-                pass
-                #if sel_index is not -1:
-                #    object_list[sel_index].move_additive(x_post-x_init, y_post-y_init)
         rendering.swap()
 
     return 0
