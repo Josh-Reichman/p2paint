@@ -52,6 +52,10 @@ def run():
         # update all objects' positions and velocities
         for o in object_list:
             o.move_additive(o.vx, o.vy)
+            if o.graphic.x < 0:
+                o.vx = -abs(o.vx)
+            if o.graphic.y < 0:
+                o.vy = -abs(o.vy)
             avx, avy = abs(o.vx), abs(o.vy)
             if avx + avy == 0:
                 continue

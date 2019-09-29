@@ -8,6 +8,7 @@ from sdl2 import SDL_WINDOW_FULLSCREEN_DESKTOP
 
 debug = True
 
+window_x, window_y = 800, 800
 WHITE = sdl2.ext.Color(255, 255, 255)
 BLACK = sdl2.ext.Color(0, 0, 0)
 
@@ -110,7 +111,7 @@ def init_rendering():
 
     # initialize window
     sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING)
-    window = sdl2.SDL_CreateWindow("Peer 2 Paint".encode('utf-8'), sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 800, 800, 0)
+    window = sdl2.SDL_CreateWindow("Peer 2 Paint".encode('utf-8'), sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, window_x, window_y, 0)
 
     render_context = RenderContext(window)
 
